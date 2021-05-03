@@ -16,8 +16,9 @@ Runtime complexity by function:
 - clear: O(1)
 
 The code functions as follows:
-- `requestHandled` ingests a value and looks for the value as a key in an object. If the address has already made a visit that day the visits count will be incremented. If the address has not made a request it will be added to the array and have its count set to 1. Then it checks the number of items in the object and for every 1000 items it will trigger the sort. This function was made to be simple in order to handle as many requests as possible as it will be called every time the application handles a request.
-- `top100` this function returns the first 100 values in the sorted array.
+- `requestHandled` ingests a value and looks for the value as a key in an object. If the address has already made a visit that day the visits count will be incremented. If the address has not made a request it will be added to the array and have its count set to 1. Then it calls the sort function each request to verify the top 100 are still correct.
+- `sort` checks to see if 100 records have been recorded yet. If not then it will just do a simple sort. If 100 addresses have been recorded it will check to see if the number of requests exceeds the lowest amount in the top 100. If it does it will shift the array and add the record and remove the end result. If it does not exceed the amount it is left off.
+- `top100` this function returns the 100 values in the sorted array.
 - `clear` simply resets the counts object and sorted array to being empty.
 
 My original plan was to create an array of objects and add a new object for each new address. Then the sorting function would just have to iterate through this array and sort it. However, this meant the complexity of the ingestion function was more complicated which would impact performance. So I opted against it.

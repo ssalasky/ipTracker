@@ -10,15 +10,36 @@ function requestHandled(address) {
     // If key does not exist create entry with base value of 1 visit
     address in counts ? counts[address]++ : counts[address] = 1;
   }
-  // Every time 1000 new entries occur run the sort function
-  if (Object.keys(counts).length % 1000 === 0) {
-    sort();
-  }
+  // Call the sort function to verify the top 100 records are still accurate
+  sort([address, counts[address]]);
 }
 
 // Handles the sorting functionality here rather than in the requestHandled function
-function sort() {
-  sorted = Object.entries(counts).sort(compare);
+function sort(record) {
+  // Check to see if 100 addresses have been recorded yet; if not do a simple sort; if yes move to more advanced sort
+  if (sorted.length < 100) {
+    sorted = Object.entries(counts).sort(compare);
+  } else {
+    // Check to see if the address already exists in the top 100;
+    const addrIndex = sorted.findIndex(addr => addr[0] === record[0]);
+    // If the address already exists just update the record and re-sort the array;
+    if (addrIndex >= 0) {
+      sorted[addrIndex] = record[1];
+      sorted = Object.entries(sorted).sort(compare);
+    } else {
+      // Get the lowest number of visits for a unique IP
+      let lowestValue = sorted[99][1];
+      // Check to see if the lowest value is lower than the address we are evaluating
+      if (record[1] > lowestValue) {
+        // Get the first index for an address with the lowest value; We want to get the first index in case there are duplicates
+        let index = sorted.findIndex(arr => arr[1] === lowestValue);
+        // Insert the record
+        sorted.splice(index, 0, record);
+        // Remove the last record to make sure the array only contains 100 values
+        sorted.slice(99, 1);
+      }
+    }
+  }
 }
 
 // Simple comparison function
@@ -33,7 +54,7 @@ function compare(a, b) {
 
 // Simply returns the first 100 values of the pre-sorted addresses array
 function top100() {
-  return sorted.slice(0,100);
+  return sorted;
 }
 
 // Resets the stored array object
