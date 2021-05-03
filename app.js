@@ -10,7 +10,7 @@ function requestHandled(address) {
     // If key does not exist create entry with base value of 1 visit
     address in counts ? counts[address]++ : counts[address] = 1;
   }
-  // Every time 100 new entries occur run the sort function
+  // Every time 1000 new entries occur run the sort function
   if (Object.keys(counts).length % 1000 === 0) {
     sort();
   }
