@@ -12,7 +12,7 @@ If I had been given more time I would have implemented more robust testing measu
 
 Runtime complexity by function:
 - requestHandled: O(1)
-- top100: O(n2)
+- top100: O(n^2)
 - clear: O(1)
 
 The code functions as follows:
