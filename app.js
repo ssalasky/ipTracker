@@ -1,6 +1,5 @@
-const SampleIPs = require('./assets/sample');
-
 let counts = {}; // Stores address information with type: {address: visits}
+let sorted = [];
 
 // Function to be called by web service with each request to store the IP making the request
 function requestHandled(address) {
@@ -11,19 +10,15 @@ function requestHandled(address) {
     // If key does not exist create entry with base value of 1 visit
     address in counts ? counts[address]++ : counts[address] = 1;
   }
+  // Every time 100 new entries occur run the sort function
+  if (Object.keys(counts).length % 1000 === 0) {
+    sort();
+  }
 }
 
-// Sorts all addresses that have been collected since reset by visit count; Then returns the first 100 values in array
-function top100() {
-  // Turns each key/value pair into an array and then sends to compare function
-  const sorted = Object.entries(counts).sort(compare);
-  const results = [];
-  sorted.forEach(arr => {
-    // Returns the address and visit counts in an object that can be iterated over on a frontend dashboard
-    results.push({address: arr[0], visits: arr[1]});
-  });
-  // Ensures that only the first 100 results are returned
-  return results.slice(0,100);
+// Handles the sorting functionality here rather than in the requestHandled function
+function sort() {
+  sorted = Object.entries(counts).sort(compare);
 }
 
 // Simple comparison function
@@ -36,18 +31,23 @@ function compare(a, b) {
   return 0;
 }
 
+// Simply returns the first 100 values of the pre-sorted addresses array
+function top100() {
+  return sorted.slice(0,100);
+}
+
 // Resets the stored array object
 function clear() {
   counts = {};
+  sorted = [];
 }
 
 
-// Testing functionality to load up sample request IPs and sort them
+// Testing functionality to generate sample IPs and send to the function. This limits each section of the address to 10 values to increase the changes of duplicates;
 function loadClients() {
-  SampleIPs.forEach(i => {
-    requestHandled(i);
-  });
-  const results = top100();
-
-  console.log(results[0].visits > results[results.length - 1].visits);
+  for (let i = 0; i <= 5000; i++) {
+    let ip = (Math.floor(Math.random() * 10) + 1)+"."+(Math.floor(Math.random() * 10))+"."+(Math.floor(Math.random() * 10))+"."+(Math.floor(Math.random() * 10));
+    requestHandled(ip);
+  }
+  console.log(sorted[0][1] > sorted[99][1]);
 }

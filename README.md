@@ -8,17 +8,17 @@ Separate function to clear out all addresses at the start of each day.
 
 # Background On Application And Challenge
 
-If I had been given more time I would have implemented more robust testing measures. Additionally, I would have built in a timer into the clear function so that it wouldn't require user interaction. Another possible item I would have built would be a results caching timer on the top100 function. This way if the dashboard was refreshed pretty rapidly it would just return the cached results to reduce load. However, I didn't want to implement this at the start as I don't know the product need for these results to be up-to-the-minute correct or if a two-minute range was allowable.
+If I had been given more time I would have implemented more robust testing measures. Additionally, I would have built in a timer into the clear function so that it wouldn't require user interaction. 
 
 Runtime complexity by function:
 - requestHandled: O(1)
-- top100: O(n^2)
+- top100: O(1)
 - clear: O(1)
 
 The code functions as follows:
-- `requestHandled` ingests a value and looks for the value as a key in an object. If the address has already made a visit that day the visits count will be incremented. If the address has not made a request it will be added to the array and have its count set to 1. This function was made to be simple in order to handle as many requests as possible as it will be called every time the application handles a request.
-- `top100` this function takes the stored object, converts it to an array of arrays and sorts based on the visits count. Then it converts the results into an array of objects with iterable keys for a frontend dashboard. Then it returns just the first 100 values. This function was built to handle the sorting since it will be called slightly less frequently than the storing function. Additionally, by shifting the sorting to this it won't impact the ingestion of addresses.
-- `clear` simply resets the address array to being empty.
+- `requestHandled` ingests a value and looks for the value as a key in an object. If the address has already made a visit that day the visits count will be incremented. If the address has not made a request it will be added to the array and have its count set to 1. Then it checks the number of items in the object and for every 1000 items it will trigger the sort. This function was made to be simple in order to handle as many requests as possible as it will be called every time the application handles a request.
+- `top100` this function returns the first 100 values in the sorted array.
+- `clear` simply resets the counts object and sorted array to being empty.
 
 My original plan was to create an array of objects and add a new object for each new address. Then the sorting function would just have to iterate through this array and sort it. However, this meant the complexity of the ingestion function was more complicated which would impact performance. So I opted against it.
 
